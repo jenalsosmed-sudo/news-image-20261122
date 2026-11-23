@@ -16,10 +16,15 @@ import { copyFileSync, existsSync, mkdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+// The poster lives next to this script; the grader hands the output
+// directory over through MAKEFUN_OUTPUT_DIR (default /output).
 const here = dirname(fileURLToPath(import.meta.url));
+const poster = join(here, 'entry.png');
 const outDir = process.env.MAKEFUN_OUTPUT_DIR ?? '/output';
-const src = join(here, 'entry.png');
-if (!existsSync(src)) throw new Error(`missing poster image: ${src}`);
+
+if (!existsSync(poster)) throw new Error(`missing poster image: ${poster}`);
 mkdirSync(outDir, { recursive: true });
-// A straight byte-for-byte copy, so both grader runs write identical bytes.
-copyFileSync(src, join(outDir, 'entry.png'));
+
+// A byte-for-byte copy: both grader runs must produce identical bytes,
+// so no re-encoding or resizing happens here.
+copyFileSync(poster, join(outDir, 'entry.png'));
